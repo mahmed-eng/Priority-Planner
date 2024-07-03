@@ -11,7 +11,11 @@ A simple To-Do List web application with priority and date functionalities.
 
 ## Preview
 
-![Priority Planner Preview](0.png)
+![Priority Planner Preview 1](0.png)
+![Priority Planner Preview 2](1.png)
+![Priority Planner Preview 3](2.png)
+![Priority Planner Preview 4](3.png)
+
 
 ## Installation
 
