@@ -2,7 +2,7 @@
 
 A simple To-Do List web application with priority and date functionalities.
 
-## url: https://priority-planner-13f70.web.app
+### URL: https://priority-planner-13f70.web.app
  
 ## Features
 
