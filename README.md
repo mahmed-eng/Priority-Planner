@@ -2,6 +2,8 @@
 
 A simple To-Do List web application with priority and date functionalities.
 
+## url: https://priority-planner-13f70.web.app
+ 
 ## Features
 
 - Add tasks with priority (Low, Medium, High) and due date/time.
