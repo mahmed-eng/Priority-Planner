@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List App with Priority and Date</title>
+    <style>
+        /* Light theme styles */
+        body.light {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        body.light .container {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light h1 {
+            text-align: center; /* Center align the text */
+            color: transparent;
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow:
+                -1px -1px 0 #343a40,
+                1px -1px 0 #343a40,
+                -1px 1px 0 #343a40,
+                1px 1px 0 #343a40;
+            background-image: linear-gradient(to right, #343a40, #f8f9fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        body.light input[type="text"],
+        body.light select,
+        body.light input[type="datetime-local"] {
+            border: 1px solid #ced4da;
+            background-color: #f1f1f1;
+            color: #495057;
+        }
+
+        body.light button {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        body.light button:hover {
+            background-color: #0056b3;
+        }
+
+        body.light .pendingBtn {
+            background-color: #ffc107;
+        }
+
+        body.light .pendingBtn:hover {
+            background-color: #e0a800;
+        }
+
+        body.light ul {
+            background-color: #e9ecef;
+        }
+
+        body.light li {
+            background-color: #e9ecef;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark theme styles */
+        body.dark {
+            font-family: Arial, sans-serif;
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        body.dark .container {
+            background-color: #212529;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark h1 {
+            text-align: center; /* Center align the text */
+            color: transparent;
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow:
+                -1px -1px 0 #ffffff,
+                1px -1px 0 #ffffff,
+                -1px 1px 0 #ffffff,
+                1px 1px 0 #ffffff;
+            background-image: linear-gradient(to right, #ffffff, #343a40);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        body.dark input[type="text"],
+        body.dark select,
+        body.dark input[type="datetime-local"] {
+            border: 1px solid #495057;
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        body.dark button {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        body.dark button:hover {
+            background-color: #0056b3;
+        }
+
+        body.dark .pendingBtn {
+            background-color: #ffc107;
+        }
+
+        body.dark .pendingBtn:hover {
+            background-color: #e0a800;
+        }
+
+        body.dark ul {
+            background-color: #495057;
+        }
+
+        body.dark li {
+            background-color: #495057;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .complete {
+            text-decoration: line-through;
+            color: #dc3545;
+        }
+
+        .priority-low {
+            background-color: #ffc107; /* Yellow for Low Priority */
+            color: #212529;
+        }
+
+        .priority-medium {
+            background-color: #28a745; /* Green for Medium Priority */
+            color: #fff;
+        }
+
+        .priority-high {
+            background-color: #dc3545; /* Red for High Priority */
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="light">
+    <div class="container">
+        <h1>Priority Planner</h1>
+        <div id="themeToggle">
+            <button id="darkThemeBtn">Dark Theme</button>
+            <button id="lightThemeBtn">Light Theme</button>
+        </div>
+        <form id="todoForm">
+            <input type="text" id="taskInput" placeholder="Add a task..." required>
+            <select id="prioritySelect" required>
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+            </select>
+            <input type="datetime-local" id="dateTimeInput" required>
+            <button type="submit">Add Task</button>
+        </form>
+        <ul id="taskList">
+            <!-- Tasks will be dynamically added here -->
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('todoForm');
+            const taskInput = document.getElementById('taskInput');
+            const prioritySelect = document.getElementById('prioritySelect');
+            const dateTimeInput = document.getElementById('dateTimeInput');
+            const taskList = document.getElementById('taskList');
+            const darkThemeBtn = document.getElementById('darkThemeBtn');
+            const lightThemeBtn = document.getElementById('lightThemeBtn');
+            const themeToggle = document.getElementById('themeToggle');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const taskText = taskInput.value.trim();
+                const taskPriority = prioritySelect.value;
+                const taskDateTime = dateTimeInput.value;
+
+                // Check if task with the same name already exists
+                const existingTasks = taskList.querySelectorAll('li');
+                let taskExists = false;
+                existingTasks.forEach(task => {
+                    const taskName = task.querySelector('span').textContent.trim();
+                    if (taskName === taskText) {
+                        taskExists = true;
+                        return;
+                    }
+                });
+
+                if (!taskExists && taskText !== '') {
+                    const taskItem = document.createElement('li');
+                    taskItem.classList.add(`priority-${taskPriority}`);
+                    taskItem.innerHTML = `
+                        <span>${taskText}</span>
+                        <span class="priority">${taskPriority}</span>
+                        <span>${formatDateTime(taskDateTime)}</span>
+                        <button class="completeBtn">Complete</button>
+                        <button class="pendingBtn">Pending</button>
+                        <button class="deleteBtn">Delete</button>
+                    `;
+                    taskList.appendChild(taskItem);
+                    taskInput.value = '';
+                    prioritySelect.value = 'low'; // Reset priority to default
+                    dateTimeInput.value = ''; // Reset date and time input
+                    
+                    // Add event listeners for complete, pending, and delete buttons
+                    const completeBtn = taskItem.querySelector('.completeBtn');
+                    completeBtn.addEventListener('click', function() {
+                        taskItem.classList.toggle('complete');
+                        toggleButtons(taskItem);
+                    });
+
+                    const pendingBtn = taskItem.querySelector('.pendingBtn');
+                    pendingBtn.addEventListener('click', function() {
+                        taskItem.classList.toggle('pending');
+                        toggleButtons(taskItem);
+                    });
+
+                    const deleteBtn = taskItem.querySelector('.deleteBtn');
+                    deleteBtn.addEventListener('click', function() {
+                        taskItem.remove();
+                    });
+                } else {
+                    alert('Task with the same name already exists!');
+                }
+            });
+
+            function formatDateTime(dateTimeString) {
+                const dateTime = new Date(dateTimeString);
+                const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+                return dateTime.toLocaleString('en-US', options);
+            }
+
+            darkThemeBtn.addEventListener('click', function() {
+                themeToggle.classList.add('hidden');
+                document.body.classList.remove('light');
+                document.body.classList.add('dark');
+            });
+
+            lightThemeBtn.addEventListener('click', function() {
+                themeToggle.classList.add('hidden');
+                document.body.classList.remove('dark');
+                document.body.classList.add('light');
+            });
+
+            function toggleButtons(taskItem) {
+                const completeBtn = taskItem.querySelector('.completeBtn');
+                const pendingBtn = taskItem.querySelector('.pendingBtn');
+                const deleteBtn = taskItem.querySelector('.deleteBtn');
+
+                if (taskItem.classList.contains('pending')) {
+                    completeBtn.classList.add('hidden');
+                    deleteBtn.classList.add('hidden');
+                    pendingBtn.textContent = 'Resume';
+                } else {
+                    completeBtn.classList.remove('hidden');
+                    deleteBtn.classList.remove('hidden');
+                    pendingBtn.textContent = 'Pending';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
